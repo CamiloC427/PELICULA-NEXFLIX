@@ -11,6 +11,21 @@ $bg-color: #8f6d4c;
 $card-radius: 10px;
 $font-stack: 'Helvetica, sans-serif';
 
+/* Interpolación 1 - nombre de clase dinámica */
+$genre: 'action';
+.movie-card-genre-#{$genre} {
+  background-color: #ffc107;
+  border-radius: $card-radius;
+}
+
+/* Interpolación 2 - propiedad dinámica */
+$position: 'center';
+.hero-section {
+  background-position: #{$position};
+  background-image: url('/assets/images/netflix-ver-peliculas-y-series-eliminadas_crop1691617487536.jpg');
+  background-size: cover;
+}
+
 /* Global styles */
 body {
   font-family: $font-stack;
@@ -29,10 +44,6 @@ body {
   .card {
     border-radius: $card-radius;
     cursor: pointer;
-
-    &.movie-card-genre-action {
-      background-color: #ffc107;
-    }
 
     &:hover {
       transform: scale(1.02);
