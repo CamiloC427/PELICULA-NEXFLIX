@@ -1,0 +1,18 @@
+::ng-deep .modal-dialog {
+  max-width: 800px !important;  
+  width: 90% !important;
+}
+
+::ng-deep .modal-body {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+::ng-deep .modal-body img {
+  width: 200px !important;      
+  height: 300px !important;
+  object-fit: cover;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
