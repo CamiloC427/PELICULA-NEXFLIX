@@ -1,105 +1,207 @@
-/* Actualización - Abril 2025 */
-
-/* Import Bootstrap and SASS color utilities */
 @use 'bootstrap/scss/bootstrap' as *;
 @use 'sass:color';
 
-/* SASS Variables */
-$primary-color: #007bff;
-$secondary-color: #1e4466;
-$bg-color: #8f6d4c;
-$card-radius: 10px;
-$font-stack: 'Helvetica, sans-serif';
+/* ============================================================
+   VARIABLES SASS (requisito: mínimo 5)
+   ============================================================ */
+$color-primario:    #e50914;                      // Rojo / acento principal
+$color-fondo:       #f8f9fa;                      // Fondo general de la página
+$color-texto:       #212529;                      // Color de texto principal
+$color-secundario:  #6c757d;                      // Texto secundario
+$color-navbar:      #ffffff;                      // Fondo del navbar
+$radio-borde:       10px;                         // Bordes redondeados
+$fuente-principal:  'Helvetica Neue', sans-serif; // Tipografía del sitio
 
-/* Interpolación 1 - nombre de clase dinámica */
-$genre: 'action';
-.movie-card-genre-#{$genre} {
-  background-color: #ffc107;
-  border-radius: $card-radius;
-}
+/* ============================================================
+   INTERPOLACIÓN - Caso 1:
+   Genera clases de color por género dinámicamente
+   Resultado: .genre-bg-action, .genre-bg-drama, .genre-bg-sci-fi
+   ============================================================ */
+$generos: (
+  action:  #ffc107,
+  drama:   color.adjust($color-secundario, $lightness: 30%),
+  sci-fi:  color.adjust($color-primario,   $lightness: 30%)
+);
 
-/* Interpolación 2 - propiedad dinámica */
-$position: 'center';
-.hero-section {
-  background-position: #{$position};
-  background-image: url('/assets/images/netflix-ver-peliculas-y-series-eliminadas_crop1691617487536.jpg');
-  background-size: cover;
-}
-
-/* Global styles */
-body {
-  font-family: $font-stack;
-  background-color: $bg-color;
-  background-image: url('/assets/images/netflix-ver-peliculas-y-series-eliminadas_crop1691617487536.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
-  min-height: 100vh;
-
-  .container {
-    padding: 2rem;
+@each $genero, $color in $generos {
+  .genre-bg-#{$genero} {
+    background-color: $color;
   }
+}
 
-  .card {
-    border-radius: $card-radius;
-    cursor: pointer;
+/* ============================================================
+   INTERPOLACIÓN - Caso 2:
+   Mixin que genera propiedades de borde por lado dinámicamente
+   Uso: @include borde-acento(left) → border-left: 4px solid ...
+   ============================================================ */
+@mixin borde-acento($lado) {
+  border-#{$lado}: 4px solid $color-primario;
+}
+
+/* ============================================================
+   ESTILOS GLOBALES
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $fuente-principal;
+  background-color: $color-fondo;
+  color: $color-texto;
+}
+
+/* ============================================================
+   NAVBAR — Anidamiento de selectores
+   ============================================================ */
+.navbar {
+  background-color: $color-navbar;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1.5rem;
+
+  .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: $color-primario;
+    text-decoration: none;
 
     &:hover {
-      transform: scale(1.02);
-      transition: transform 0.2s;
+      color: color.adjust($color-primario, $lightness: -10%);
+    }
+  }
+
+  .navbar-nav {
+    display: flex;
+    gap: 1.2rem;
+
+    .nav-link {
+      color: $color-texto;
+      font-size: 0.95rem;
+      text-decoration: none;
+      padding: 0.3rem 0.5rem;
+      border-radius: calc($radio-borde / 2);
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: color.adjust($color-fondo, $lightness: -5%);
+        color: $color-primario;
+      }
+
+      &.active {
+        color: $color-primario;
+        font-weight: bold;
+      }
     }
   }
 }
 
+/* ============================================================
+   TARJETAS DE PELÍCULA — Anidamiento + variables
+   ============================================================ */
+.card {
+  border-radius: $radio-borde;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .card-img-top {
+    height: 220px;
+    object-fit: cover;
+  }
+
+  .card-body {
+    padding: 1rem;
+    background-color: $color-navbar;
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: $color-texto;
+      margin-bottom: 0.25rem;
+    }
+
+    .card-text {
+      font-size: 0.85rem;
+      color: $color-secundario;
+      text-transform: capitalize;
+    }
+  }
+
+  &.movie-card-destacada {
+    @include borde-acento(left);
+  }
+}
+
+/* ============================================================
+   CLASES DE GÉNERO — compatibles con el HTML existente
+   ============================================================ */
+.movie-card-genre-action {
+  background-color: map-get($generos, action);
+}
+
 .movie-card-genre-sci-fi {
-  background-color: color.adjust($primary-color, $lightness: 30%);
+  background-color: map-get($generos, sci-fi);
 }
 
 .movie-card-genre-drama {
-  background-color: color.adjust($secondary-color, $lightness: 30%);
+  background-color: map-get($generos, drama);
 }
 
-.movie-card-genre-crime {
-  background-color: #dc3545;
-}
+/* ============================================================
+   CONTENEDOR PRINCIPAL — Anidamiento + variables
+   ============================================================ */
+.container {
+  padding: 2rem;
 
-.movie-card-genre-romance {
-  background-color: #f78da7;
-}
+  .form-control {
+    border-radius: calc($radio-borde / 2);
+    border: 1px solid color.adjust($color-secundario, $lightness: 20%);
+    font-family: $fuente-principal;
 
-.btn-login {
-  background-color: #198754;
-  color: #fff;
-  border: none;
-
-  &:hover {
-    background-color: color.adjust(#198754, $lightness: -5%);
+    &:focus {
+      border-color: $color-primario;
+      box-shadow: 0 0 0 3px rgba($color-primario, 0.2);
+      outline: none;
+    }
   }
 }
 
-.btn-signup {
-  background-color: #0d6efd;
-  color: #fff;
-  border: none;
+/* ============================================================
+   SECCIÓN CONTACTO — Anidamiento + mixin de interpolación
+   ============================================================ */
+.contact-section {
+  padding: 2rem;
 
-  &:hover {
-    background-color: color.adjust(#0d6efd, $lightness: -5%);
+  h3 {
+    color: $color-primario;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    @include borde-acento(bottom);
+    padding-bottom: 0.4rem;
+    display: inline-block;
   }
-}
 
-header h1 {
-  font-size: 2.5rem;
-  font-weight: 500;
-  margin: 0;
-}
+  p {
+    color: $color-texto;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
 
-.navbar-nav .nav-link {
-  font-weight: 500;
-  margin-right: 1rem;
+    strong {
+      color: $color-secundario;
+    }
+  }
 
-  &.active {
-    color: #0d6efd;
-    font-weight: bold;
+  iframe {
+    border-radius: $radio-borde;
+    margin-top: 1rem;
   }
 }
